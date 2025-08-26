@@ -4,6 +4,7 @@ import axios from "axios";
 const AdminUpload = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -13,6 +14,7 @@ const AdminUpload = () => {
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a file first.");
+      setIsError(true);
       return;
     }
 
@@ -32,6 +34,7 @@ const AdminUpload = () => {
         }
       );
       setMessage(response.data.message);
+      setIsError(false);
     } catch (error) {
       let displayMessage = "An unknown upload error occurred.";
       if (
@@ -42,6 +45,7 @@ const AdminUpload = () => {
         displayMessage = error.response.data.message;
       }
       setMessage(displayMessage);
+      setIsError(true);
     }
   };
 
@@ -50,7 +54,7 @@ const AdminUpload = () => {
       <h3>Admin: Upload Company Data</h3>
       <input type="file" accept=".pdf" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
-      {message && <p>{message}</p>}
+      {message && <p className={isError ? "error" : "success"}>{message}</p>}
     </div>
   );
 };

@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Conversation = require("../models/Conversation");
 const Groq = require("groq-sdk");
-
+const auth = require("../middleware/auth");
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
-
+router.use(auth);
 router.post("/", async (req, res) => {
-  const { userId, message } = req.body;
+  const userId = req.user.id;
+  const { message } = req.body;
   if (!userId || !message) {
     return res.status(400).json({ error: "userId and message are required." });
   }
@@ -45,10 +46,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/history/:userId", async (req, res) => {
+router.get("/history", async (req, res) => {
   try {
     const conversation = await Conversation.findOne({
-      userId: req.params.userId,
+      userId: req.user.id,
     });
     if (conversation) {
       res.json(conversation);

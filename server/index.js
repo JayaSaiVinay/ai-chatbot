@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 
 const chatRoutes = require("./routes/chatRoutes");
 const authRoutes = require("./routes/authRoutes");
+const fileRoutes = require("./routes/fileRoutes");
 const app = express();
 
 app.use(cors());
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/chat", chatRoutes); 
 app.use("/api/auth", authRoutes);
+app.use("/api/files", fileRoutes);
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
