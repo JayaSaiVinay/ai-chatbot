@@ -6,6 +6,17 @@
 A full-stack, AI-powered chat application designed to provide contextual customer support. This platform allows users to interact with an intelligent assistant whose knowledge base can be customized by an administrator uploading company-specific documents. The application features a secure, token-based authentication system and a clean, responsive user interface. 
 
 -----
+Main Chat Interface
+<img width="822" height="908" alt="1" src="https://github.com/user-attachments/assets/ef19540b-fe34-441f-81e8-03d327fce4b0" />
+
+Admin Interface
+<img width="822" height="908" alt="2" src="https://github.com/user-attachments/assets/750c0f2d-2c87-4b87-a5ae-16124e016757" />
+
+Admin Interface
+<img width="822" height="908" alt="3" src="https://github.com/user-attachments/assets/0a0a7bcf-7a0c-4c57-b8f9-f9629db8e6bf" />
+
+Working video
+https://github.com/user-attachments/assets/fe5adf10-0e09-40c2-b6df-bf70d6c53d7d
 
 Key Features
 
