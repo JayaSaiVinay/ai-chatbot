@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { FaPaperPlane } from "react-icons/fa";
 const MessageInput = ({ onSendMessage }) => {
   const [text, setText] = useState("");
   const handleSubmit = (e) => {
@@ -17,7 +17,17 @@ const MessageInput = ({ onSendMessage }) => {
         onChange={(e) => setText(e.target.value)}
         placeholder="Type your message..."
       />
-      <button type="submit">Send</button>
+      <button type="submit">
+        <FaPaperPlane
+          style={{
+            color: "white",
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "1rem",
+          }}
+        />
+      </button>
     </form>
   );
 };

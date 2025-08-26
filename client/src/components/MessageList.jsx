@@ -1,6 +1,14 @@
 import React from "react";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
+import { useRef, useEffect } from "react";
 const MessageList = ({ messages, isLoading }) => {
+  const messageEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
     <div className="message-list">
       {messages.map((message, index) => (
@@ -13,6 +21,7 @@ const MessageList = ({ messages, isLoading }) => {
           <p>Agent is typing...</p>
         </div>
       )}
+      <div ref={messageEndRef} />
     </div>
   );
 };

@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
 import axios from "axios";
 const ChatWindow = () => {
-  const [messages, setMessages] = useState([
-    { sender: "bot", content: "Hello! How can I help you today?" },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoading(true);
+      try {
+        const userID = "session_123";
+        const response = await axios.get(
+          `http://localhost:5001/api/chat/history/${userID}`
+        );
+        if (response.data && response.data.messages) {
+          setMessages(response.data.messages); 
+        } else {
+          setMessages([
+            { sender: "bot", text: "Hello! How can I assist you today?" },
+          ]);
+        }
+      } catch (error) {
+        setMessages([
+          { sender: "bot", text: "Hello! How can I assist you today?" },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
   const handleSendMessage = async (message) => {
     const userMessage = { sender: "user", text: message };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
