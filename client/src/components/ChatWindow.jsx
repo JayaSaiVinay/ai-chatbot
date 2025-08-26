@@ -1,58 +1,95 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import MessageInput from "./MessageInput";
+import MessageList from "./MessageList";
+import { jwtDecode } from "jwt-decode";
+import AdminUpload from "./AdminUpload";
 import axios from "axios";
 
-const AdminUpload = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
+const ChatWindow = () => {
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setMessage("");
+  const token = localStorage.getItem("token");
+  const user = token ? jwtDecode(token).user : null;
+
+  const authConfig = {
+    headers: {
+      "x-auth-token": token,
+    },
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file first.");
+  useEffect(() => {
+    if (user?.role === "admin" || !token) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    const token = localStorage.getItem("token");
+    const fetchHistory = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/api/chat/history`,
+          authConfig
+        );
+        if (response.data && response.data.messages.length > 0) {
+          setMessages(response.data.messages);
+        } else {
+          setMessages([
+            { sender: "bot", text: "Hello! How can I assist you today?" },
+          ]);
+        }
+      } catch (error) {
+        setMessages([
+          { sender: "bot", text: "Hello! How can I assist you today?" },
+        ]);
+        console.log("No previous history found for this user.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [token, user?.role]);
+
+  const handleSendMessage = async (message) => {
+    const userMessage = { sender: "user", text: message };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
-        "http://localhost:5001/api/files/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "x-auth-token": token,
-          },
-        }
+        "http://localhost:5001/api/chat",
+        { message: message },
+        authConfig
       );
-      setMessage(response.data.message);
+      const botMessage = { sender: "bot", text: response.data.reply };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
-      let displayMessage = "An unknown upload error occurred.";
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        displayMessage = error.response.data.message;
-      }
-      setMessage(displayMessage);
+      console.error("Error fetching bot reply:", error);
+      const errorMessage = {
+        sender: "bot",
+        text: "Sorry, I am having trouble connecting. Please try again.",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="admin-upload">
-      <h3>Admin: Upload Company Data</h3>
-      <input type="file" accept=".pdf" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-      {message && <p>{message}</p>}
+    <div className="chat-window">
+      <div className="chat-header">
+        <h2>AI Support Agent</h2>
+      </div>
+      {user && user.role === "admin" ? (
+        <AdminUpload />
+      ) : (
+        <>
+          <MessageList messages={messages} isLoading={isLoading} />
+          <MessageInput onSendMessage={handleSendMessage} />
+        </>
+      )}
     </div>
   );
 };
 
-export default AdminUpload;
+export default ChatWindow;

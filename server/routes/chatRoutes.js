@@ -3,6 +3,7 @@ const router = express.Router();
 const Conversation = require("../models/Conversation");
 const Groq = require("groq-sdk");
 const auth = require("../middleware/auth");
+const CompanyData = require("../models/CompanyData");
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
@@ -21,6 +22,17 @@ router.post("/", async (req, res) => {
     }
     conversation.messages.push({ sender: "user", text: message });
 
+    const companyInfo = await CompanyData.findOne({});
+    const contextText = companyInfo ? companyInfo.content : "";
+    console.log(contextText);
+    const systemPrompt = `You are a helpful customer support agent.
+    Your answers must be based ONLY on the information provided below.
+    If the user's question cannot be answered using this information, you must say "I'm sorry, I don't have that information."
+
+    --- COMPANY INFORMATION ---
+    ${contextText}
+    --- END OF INFORMATION ---`;
+
     const promptMessages = conversation.messages.map((msg) => ({
       role: msg.sender === "user" ? "user" : "assistant",
       content: msg.text,
@@ -28,8 +40,7 @@ router.post("/", async (req, res) => {
 
     promptMessages.unshift({
       role: "system",
-      content:
-        "You are a friendly and helpful customer support agent. Keep your answers concise and to the point. Use simple bullet points for lists if needed.",
+      content: systemPrompt,
     });
 
     const completion = await groq.chat.completions.create({
