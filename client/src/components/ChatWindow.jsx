@@ -18,6 +18,30 @@ const ChatWindow = () => {
     },
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
+
+  const handleDownloadChat = () => {
+    const chatLog = messages
+      .map((msg) => {
+        const prefix = msg.sender === "bot" ? "Agent:" : "You:";
+        return `${prefix} ${msg.text}`;
+      })
+      .join("\n\n");
+
+    const blob = new Blob([chatLog], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "chat-history.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     if (user?.role === "admin" || !token) {
       return;
@@ -79,6 +103,15 @@ const ChatWindow = () => {
     <div className="chat-window">
       <div className="chat-header">
         <h2>AI Support Agent</h2>
+        <button
+          onClick={handleDownloadChat}
+          className="header-button download-button"
+        >
+          Download
+        </button>
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
       </div>
       {user && user.role === "admin" ? (
         <AdminUpload />

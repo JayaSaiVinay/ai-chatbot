@@ -25,16 +25,54 @@ body {
 }
 
 .chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 18px 20px;
   background-color: #f5f5f5;
   border-bottom: 1px solid #ddd;
-  text-align: center;
 }
 
 .chat-header h2 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.header-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+  background-color: transparent;
+}
+
+.logout-button {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.logout-button:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.download-button {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.download-button:hover {
+  background-color: #6c757d;
+  color: white;
 }
 
 .message-list {
@@ -83,12 +121,10 @@ body {
 
 .message.bot {
   align-self: flex-start;
-  background-color: #e9e9eb;
-  padding: 5px;
-  border-radius: 1rem;
 }
 
 .message.bot .react-markdown {
+  background-color: #e9e9eb;
   color: black;
   border-bottom-left-radius: 5px;
 }
